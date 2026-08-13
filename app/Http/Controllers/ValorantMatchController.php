@@ -5,16 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\ValorantMatch;
+use Carbon\Carbon;
 
 class ValorantMatchController extends Controller
 {
 
-    // NOVO MÉTODO: Carrega a tela principal com paginação
+    // Carrega a tela principal com paginação
     public function index()
     {
         // Puxa as partidas do banco, ordenando da mais recente para a mais antiga
         // O "paginate(5)" já faz toda a mágica da paginação do Laravel!
-        $partidas = ValorantMatch::orderBy('created_at', 'desc')->paginate(5);
+        $partidas = ValorantMatch::orderBy('played_at', 'desc')->paginate(5);
         
         // Envia a variável $partidas para a View que vamos criar chamada 'partidas'
         return view('partidas', compact('partidas'));
@@ -25,7 +26,7 @@ class ValorantMatchController extends Controller
         // 1. Fazendo a requisição para a API da comunidade
         $resposta = Http::withHeaders([
             'Authorization' => env('HENRIK_VALORANT_API_KEY')
-            ])->get('https://api.henrikdev.xyz/valorant/v3/matches/br/Harriison/BR1?mode=competitive');
+            ])->get('https://api.henrikdev.xyz/valorant/v3/matches/br/Harriison/BR1?mode=competitive&size=20');
         
         // Verificando se a API retornou sucesso
         if ($resposta->successful()) {
@@ -58,7 +59,12 @@ class ValorantMatchController extends Controller
                             'assists' => $meusDados['stats']['assists'],
                             // A API retorna quem venceu o jogo (Red ou Blue). 
                             // Nós comparamos para saber se o time vencedor é o seu.
-                            'result' => $partida['teams']['red']['has_won'] && $meusDados['team'] === 'Red' || $partida['teams']['blue']['has_won'] && $meusDados['team'] === 'Blue' ? 'Vitória' : 'Derrota'
+                            'result' => $partida['teams']['red']['has_won'] && $meusDados['team'] === 'Red' || $partida['teams']['blue']['has_won'] && $meusDados['team'] === 'Blue' ? 'Vitória' : 'Derrota',
+
+                            'played_at' => Carbon::createFromTimestampUTC(
+                                $partida['metadata']['game_start']
+                            )->setTimezone('America/Sao_Paulo'),
+
                         ]
                     );
                 }

@@ -30,6 +30,7 @@
                         <th class="p-4 border-b border-gray-600">Agente</th>
                         <th class="p-4 border-b border-gray-600">K / D / A</th>
                         <th class="p-4 border-b border-gray-600">Resultado</th>
+                        <th class="p-4 border-b border-gray-600">Data</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-700">
@@ -44,6 +45,8 @@
                         <td class="p-4 font-bold {{ $partida->result == 'Vitória' ? 'text-green-400' : 'text-red-400' }}">
                             {{ $partida->result }}
                         </td>
+
+                        <td class="p-4">{{ $partida->played_at->format('d/m/Y H:i') }}</td>
                     </tr>
                     @endforeach
                 </tbody>

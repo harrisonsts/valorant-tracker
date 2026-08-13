@@ -17,6 +17,11 @@ class ValorantMatch extends Model
         'kills',
         'deaths',
         'assists',
-        'result'
+        'result',
+        'played_at'
+    ];
+
+    protected $casts = [
+        'played_at' => 'datetime',
     ];
 }

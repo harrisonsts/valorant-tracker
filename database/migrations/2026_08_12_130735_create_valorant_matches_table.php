@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('deaths');
             $table->integer('assists');
             $table->string('result')->nullable(); // Vitória, Derrota ou Empate
+            $table->dateTime('played_at')->nullable();
 
             $table->timestamps();
         });
