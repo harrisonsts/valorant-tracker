@@ -53,9 +53,24 @@
             </table>
         </div>
 
-        <!-- A mágica da Paginação (Links para a próxima página) -->
-        <div class="mt-6">
-            {{ $partidas->links() }}
+        <!-- Paginação com Botão de Última Página -->
+        <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            
+            <!-- Paginação Padrão do Laravel -->
+            <div class="w-full overflow-x-auto">
+                {{ $partidas->links() }}
+            </div>
+            
+            <!-- Botão Personalizado de Última Página -->
+            @if ($partidas->currentPage() < $partidas->lastPage())
+                <div>
+                    <a href="{{ $partidas->url($partidas->lastPage()) }}" 
+                       class="inline-block bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded transition whitespace-nowrap">
+                        ({{ $partidas->lastPage() }}) &raquo;
+                    </a>
+                </div>
+            @endif
+
         </div>
 
     </div>
