@@ -14,19 +14,19 @@ class ValorantMatchController extends Controller
     public function index()
     {
         // Puxa as partidas do banco, ordenando da mais recente para a mais antiga
-        // O "paginate(5)" já faz toda a mágica da paginação do Laravel!
+        // O "paginate(5)" faz a paginação do Laravel!
         $partidas = ValorantMatch::orderBy('played_at', 'desc')->paginate(5);
         
-        // Envia a variável $partidas para a View que vamos criar chamada 'partidas'
+        // Envia a variável $partidas para a View 'partidas'
         return view('partidas', compact('partidas'));
     }
 
     public function syncMatches()
     {
-        // 1. Fazendo a requisição para a API da comunidade
+        // 1. Fazendo a requisição para a API
         $resposta = Http::withHeaders([
             'Authorization' => env('HENRIK_VALORANT_API_KEY')
-            ])->get('https://api.henrikdev.xyz/valorant/v3/matches/br/Harriison/BR1?mode=competitive&size=20');
+            ])->get('https://api.henrikdev.xyz/valorant/v3/matches/br/Harriison/BR1?mode=competitive&size=10');
         
         // Verificando se a API retornou sucesso
         if ($resposta->successful()) {
@@ -35,7 +35,7 @@ class ValorantMatchController extends Controller
             // 2. Percorrendo cada partida retornada pela API
             foreach ($partidas as $partida) {
                 
-                // Procurando os seus dados dentro da lista de jogadores da partida
+                // Procurando dados dentro da lista de jogadores da partida
                 $meusDados = null;
                 foreach ($partida['players']['all_players'] as $jogador) {
                     if (strtolower($jogador['name']) === strtolower('Harriison')) {
@@ -58,7 +58,7 @@ class ValorantMatchController extends Controller
                             'deaths' => $meusDados['stats']['deaths'],
                             'assists' => $meusDados['stats']['assists'],
                             // A API retorna quem venceu o jogo (Red ou Blue). 
-                            // Nós comparamos para saber se o time vencedor é o seu.
+                            // Comparamos para saber se o time vencedor é o seu.
                             'result' => $partida['teams']['red']['has_won'] && $meusDados['team'] === 'Red' || $partida['teams']['blue']['has_won'] && $meusDados['team'] === 'Blue' ? 'Vitória' : 'Derrota',
 
                             'played_at' => Carbon::createFromTimestampUTC(
