@@ -44,8 +44,13 @@ class ValorantMatchController extends Controller
                     }
                 }
 
-                // 3. Se encontrou você na partida, salva no banco!
+                // 3. Se encontrou o jogador na partida, salva no banco!
                 if ($meusDados) {
+
+                    $totalTiros = $meusDados['stats']['bodyshots']
+                        + $meusDados['stats']['legshots']
+                        + $meusDados['stats']['headshots'];
+
                     ValorantMatch::updateOrCreate(
                         // O Laravel procura por essa coluna para ver se já existe:
                         ['match_id' => $partida['metadata']['matchid']],
@@ -59,7 +64,14 @@ class ValorantMatchController extends Controller
                             'assists' => $meusDados['stats']['assists'],
                             // A API retorna quem venceu o jogo (Red ou Blue). 
                             // Comparamos para saber se o time vencedor é o seu.
-                            'result' => $partida['teams']['red']['has_won'] && $meusDados['team'] === 'Red' || $partida['teams']['blue']['has_won'] && $meusDados['team'] === 'Blue' ? 'Vitória' : 'Derrota',
+                            'result' => 
+                            $partida['teams']['red']['has_won'] && $meusDados['team'] === 'Red' 
+                            || 
+                            $partida['teams']['blue']['has_won'] && $meusDados['team'] === 'Blue' ? 'Vitória' : 'Derrota',
+
+                            'hs' => $totalTiros > 0
+                                ? ($meusDados['stats']['headshots'] / $totalTiros) * 100
+                                : 0,
 
                             'played_at' => Carbon::createFromTimestampUTC(
                                 $partida['metadata']['game_start']

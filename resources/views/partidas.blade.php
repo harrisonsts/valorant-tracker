@@ -29,6 +29,7 @@
                         <th class="p-4 border-b border-gray-600">Mapa</th>
                         <th class="p-4 border-b border-gray-600">Agente</th>
                         <th class="p-4 border-b border-gray-600">K / D / A</th>
+                        <th class="p-4 border-b border-gray-600">HS%</th>
                         <th class="p-4 border-b border-gray-600">Resultado</th>
                         <th class="p-4 border-b border-gray-600">Data</th>
                     </tr>
@@ -40,6 +41,8 @@
                         <td class="p-4">{{ $partida->map }}</td>
                         <td class="p-4">{{ $partida->agent }}</td>
                         <td class="p-4 font-mono">{{ $partida->kills }} / {{ $partida->deaths }} / {{ $partida->assists }}</td>
+
+                        <td class="p-4">{{ number_format($partida->hs, 0) }}%</d>
                         
                         <!-- Condicional simples para colorir Vitória e Derrota -->
                         <td class="p-4 font-bold {{ $partida->result == 'Vitória' ? 'text-green-400' : 'text-red-400' }}">
