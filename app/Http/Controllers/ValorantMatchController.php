@@ -51,6 +51,40 @@ class ValorantMatchController extends Controller
                         + $meusDados['stats']['legshots']
                         + $meusDados['stats']['headshots'];
 
+                    $jogadores = $partida['players']['all_players'];
+                    $teamRed = [];
+                    $teamBlue = [];
+
+                    foreach($jogadores as $jogador){
+                        if(strtolower($jogador['team']) === strtolower('Red')) {
+                            $teamRed[] = $jogador;
+                        }else {
+                            $teamBlue[] = $jogador;
+                        }
+                    }
+
+                    $mvp = collect($jogadores)->sortByDesc('stats.score')->first();
+                    $mvpRed = collect($teamRed)->sortByDesc('stats.score')->first();
+                    $mvpBlue = collect($teamBlue)->sortByDesc('stats.score')->first();
+
+                    $myTeam = $meusDados['team'];
+
+                    $myRanking = collect($jogadores)->sortByDesc('stats.score')->values()->search(function ($jogador) {
+                        return $jogador['name'] === 'Harriison';
+                    });
+
+                    $myRanking++;
+
+                    $myName = "Harriison";
+
+                    if($mvp['name'] === $myName) {
+                        $mvpTipo = "MVP";
+                    }else if($mvpRed['name'] === $myName || $mvpBlue['name'] === $myName){
+                        $mvpTipo = "MVP Equipe";
+                    }else {
+                        $mvpTipo = $myRanking . "º";
+                    }
+
                     ValorantMatch::updateOrCreate(
                         // O Laravel procura por essa coluna para ver se já existe:
                         ['match_id' => $partida['metadata']['matchid']],
@@ -65,9 +99,9 @@ class ValorantMatchController extends Controller
                             // A API retorna quem venceu o jogo (Red ou Blue). 
                             // Comparamos para saber se o time vencedor é o seu.
                             'result' => 
-                            $partida['teams']['red']['has_won'] && $meusDados['team'] === 'Red' 
+                            $partida['teams']['red']['has_won'] && $myTeam === 'Red' 
                             || 
-                            $partida['teams']['blue']['has_won'] && $meusDados['team'] === 'Blue' ? 'Vitória' : 'Derrota',
+                            $partida['teams']['blue']['has_won'] && $myTeam === 'Blue' ? 'Vitória' : 'Derrota',
 
                             'hs' => $totalTiros > 0
                                 ? ($meusDados['stats']['headshots'] / $totalTiros) * 100
@@ -76,6 +110,8 @@ class ValorantMatchController extends Controller
                             'played_at' => Carbon::createFromTimestampUTC(
                                 $partida['metadata']['game_start']
                             )->setTimezone('America/Sao_Paulo'),
+
+                            'mvp' => $mvpTipo,
 
                         ]
                     );

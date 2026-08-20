@@ -20,6 +20,7 @@ class ValorantMatch extends Model
         'result',
         'played_at',
         'hs',
+        'mvp',
     ];
 
     protected $casts = [

@@ -26,6 +26,7 @@
             <table class="w-full text-left border-collapse">
                 <thead class="bg-gray-700 text-gray-300">
                     <tr>
+                        <th class="p-4 border-b border-gray-600">Rank</th>
                         <th class="p-4 border-b border-gray-600">Mapa</th>
                         <th class="p-4 border-b border-gray-600">Agente</th>
                         <th class="p-4 border-b border-gray-600">K / D / A</th>
@@ -38,6 +39,7 @@
                     <!-- O Blade varre a variável que mandamos do Controller -->
                     @foreach ($partidas as $partida)
                     <tr class="hover:bg-gray-750 transition">
+                        <td class="p-4">{{ $partida->mvp }}</td>
                         <td class="p-4">{{ $partida->map }}</td>
                         <td class="p-4">{{ $partida->agent }}</td>
                         <td class="p-4 font-mono">{{ $partida->kills }} / {{ $partida->deaths }} / {{ $partida->assists }}</td>
